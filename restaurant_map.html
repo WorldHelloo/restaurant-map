@@ -1,0 +1,551 @@
+<!DOCTYPE html>
+<html>
+<head>
+    
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+    <script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.3/dist/leaflet.js"></script>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.3/dist/leaflet.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap-glyphicons.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.2.0/css/all.min.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/python-visualization/folium/folium/templates/leaflet.awesome.rotate.min.css"/>
+    
+            <meta name="viewport" content="width=device-width,
+                initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+            <style>
+                #map_51bec8c9603deebcb8ac8c02cd8efb1a {
+                    position: relative;
+                    width: 100.0%;
+                    height: 100.0%;
+                    left: 0.0%;
+                    top: 0.0%;
+                }
+                .leaflet-container { font-size: 1rem; }
+            </style>
+
+            <style>html, body {
+                width: 100%;
+                height: 100%;
+                margin: 0;
+                padding: 0;
+            }
+            </style>
+
+            <style>#map {
+                position:absolute;
+                top:0;
+                bottom:0;
+                right:0;
+                left:0;
+                }
+            </style>
+
+            <script>
+                L_NO_TOUCH = false;
+                L_DISABLE_3D = false;
+            </script>
+
+        
+</head>
+<body>
+    
+    
+<script>
+function setVisibility(type) {
+    const allMarkers = document.querySelectorAll('.leaflet-interactive');
+    allMarkers.forEach(el => {
+        if (type === '전체') {
+            el.style.display = 'block';
+        } else {
+            if (el.classList.contains(`marker-${type}`)) {
+                el.style.display = 'block';
+            } else {
+                el.style.display = 'none';
+            }
+        }
+    });
+}
+</script>
+    
+<style>
+#filter-box {
+    position: fixed;
+    top: 20px;
+    right: 12px;
+    width: 150px;
+    background: #2d3436;
+    padding: 12px 15px;
+    border-radius: 12px;
+    border: none;
+    z-index: 9999;
+    font-size: 14px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+    font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+}
+#filter-box button {
+    margin: 6px 0;
+    width: 100%;
+    padding: 8px 0;
+    border: none;
+    background: #00cec9;
+    color: #fff;
+    border-radius: 25px;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 15px;
+    transition: background-color 0.3s ease;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+}
+#filter-box button:hover {
+    background: #81ecec;
+    color: #2d3436;
+}
+#filter-box button:focus {
+    outline: none;
+    box-shadow: 0 0 8px 2px #00cec9;
+}
+</style>
+<div id="filter-box">
+  <button onclick="setVisibility('전체')" style="background:#0984e3;">전체 보기</button>
+  <button onclick="setVisibility('한식')">한식</button>
+  <button onclick="setVisibility('분식')">분식</button>
+  <button onclick="setVisibility('카페')">카페</button>
+  <button onclick="setVisibility('중식')">중식</button>
+  <button onclick="setVisibility('일식')">일식</button>
+  <button onclick="setVisibility('해산물')">해산물</button>
+</div>
+    
+<style>
+#legend-toggle {
+    position: fixed;
+    top: 130px;
+    left: 12px;
+    background: #2d3436;
+    color: #fff;
+    padding: 10px 14px;
+    border: none;
+    border-radius: 8px;
+    font-size: 15px;
+    z-index: 9999;
+    cursor: pointer;
+    font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+}
+#legend-box {
+    position: fixed;
+    top: 180px;
+    left: 12px;
+    width: 190px;
+    padding: 14px;
+    background: #fff;
+    border: 2px solid #ccc;
+    border-radius: 12px;
+    z-index: 9999;
+    font-size: 15px;
+    display: none;
+    line-height: 1.6;
+    font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+}
+#legend-box i {
+    width: 16px;
+    height: 16px;
+    display: inline-block;
+    border-radius: 50%;
+    margin-right: 8px;
+    vertical-align: middle;
+}
+</style>
+<button id="legend-toggle">🍴 음식점 종류 보기</button>
+<div id="legend-box">
+  <b>🍴 음식점 종류</b><br><br>
+  <i style="background:#E94B3C;"></i> 한식<br>
+  <i style="background:#3867B4;"></i> 분식<br>
+  <i style="background:#9b59b6;"></i> 카페<br>
+  <i style="background:#F39C12;"></i> 중식<br>
+  <i style="background:#6C5CE7;"></i> 일식<br>
+  <i style="background:#16a085;"></i> 해산물<br>
+</div>
+<script>
+const toggleBtn = document.getElementById('legend-toggle');
+const legendBox = document.getElementById('legend-box');
+toggleBtn.addEventListener('click', () => {
+    if (legendBox.style.display === 'none' || legendBox.style.display === '') {
+        legendBox.style.display = 'block';
+        toggleBtn.innerText = '❌ 음식점 종류 닫기';
+    } else {
+        legendBox.style.display = 'none';
+        toggleBtn.innerText = '🍴 음식점 종류 보기';
+    }
+});
+</script>
+    
+<div id="radius-info" style="position: fixed; bottom: 16px; left: 12px; background: #ffffffcc; color: #2d3436;
+padding: 10px 14px; font-size: 15px; border: 2px solid #ccc; border-radius: 10px; z-index: 9999;
+max-width: 320px; box-shadow: 2px 2px 6px rgba(0,0,0,0.2); font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">
+📍 현재 지도에는 <b>호계고등학교 기준 반경 5km 이내</b> 음식점만 표시됩니다.
+</div>
+    
+<style>
+/* 모바일 및 작은 화면 대응 */
+@media (max-width: 768px) {
+    #filter-box {
+        width: 130px !important;
+        top: 10px !important;
+        right: 8px !important;
+        font-size: 13px !important;
+        padding: 10px 12px !important;
+    }
+    #filter-box button {
+        font-size: 13px !important;
+        padding: 6px 0 !important;
+        margin: 4px 0 !important;
+    }
+    #legend-toggle {
+        top: 110px !important;
+        left: 8px !important;
+        font-size: 13px !important;
+        padding: 8px 12px !important;
+    }
+    #legend-box {
+        top: 150px !important;
+        left: 8px !important;
+        width: 160px !important;
+        font-size: 13px !important;
+        padding: 12px !important;
+    }
+    #radius-info {
+        bottom: 12px !important;
+        left: 8px !important;
+        font-size: 13px !important;
+        max-width: 280px !important;
+        padding: 8px 12px !important;
+    }
+}
+</style>
+    
+            <div class="folium-map" id="map_51bec8c9603deebcb8ac8c02cd8efb1a" ></div>
+        
+</body>
+<script>
+    
+    
+            var map_51bec8c9603deebcb8ac8c02cd8efb1a = L.map(
+                "map_51bec8c9603deebcb8ac8c02cd8efb1a",
+                {
+                    center: [35.6311, 129.35475],
+                    crs: L.CRS.EPSG3857,
+                    ...{
+  "zoom": 14,
+  "zoomControl": true,
+  "preferCanvas": false,
+}
+
+                }
+            );
+
+            
+
+        
+    
+            var tile_layer_6294a88159c8c63831176e640947f4ca = L.tileLayer(
+                "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
+                {
+  "minZoom": 0,
+  "maxZoom": 19,
+  "maxNativeZoom": 19,
+  "noWrap": false,
+  "attribution": "\u0026copy; \u003ca href=\"https://www.openstreetmap.org/copyright\"\u003eOpenStreetMap\u003c/a\u003e contributors",
+  "subdomains": "abc",
+  "detectRetina": false,
+  "tms": false,
+  "opacity": 1,
+}
+
+            );
+        
+    
+            tile_layer_6294a88159c8c63831176e640947f4ca.addTo(map_51bec8c9603deebcb8ac8c02cd8efb1a);
+        
+    
+            var marker_2572e623d9e2535ec3d822f347041621 = L.marker(
+                [35.6311, 129.35475],
+                {
+}
+            ).addTo(map_51bec8c9603deebcb8ac8c02cd8efb1a);
+        
+    
+            var icon_1cd941d0e47e7ffca9265ddbebcf5214 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "red",
+  "iconColor": "white",
+  "icon": "home",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+            marker_2572e623d9e2535ec3d822f347041621.bindTooltip(
+                `<div>
+                     내 위치 (호계고등학교 기준)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_2572e623d9e2535ec3d822f347041621.setIcon(icon_1cd941d0e47e7ffca9265ddbebcf5214);
+            
+    
+            var circle_ffab5d1c021ace592526836aee7f826b = L.circle(
+                [35.6311, 129.35475],
+                {"bubblingMouseEvents": true, "color": "blue", "dashArray": "5,10", "dashOffset": null, "fill": false, "fillColor": "blue", "fillOpacity": 0.2, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 5000, "stroke": true, "weight": 2}
+            ).addTo(map_51bec8c9603deebcb8ac8c02cd8efb1a);
+        
+    
+            circle_ffab5d1c021ace592526836aee7f826b.bindTooltip(
+                `<div>
+                     반경 5km
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_976f923f9262771f81dcab7a0c903c38 = L.circleMarker(
+                [35.6331, 129.357],
+                {"bubblingMouseEvents": true, "className": "marker-\ubd84\uc2dd", "color": "#3867B4", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#3867B4", "fillOpacity": 0.85, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 9, "stroke": true, "weight": 3}
+            ).addTo(map_51bec8c9603deebcb8ac8c02cd8efb1a);
+        
+    
+        var popup_7225ea28dfd0f2aa97e683767175884d = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_fea06c2815c31db677289696826f7d5c = $(`<div id="html_fea06c2815c31db677289696826f7d5c" style="width: 100.0%; height: 100.0%;">     <div style='width:280px; font-size:14px; font-family:sans-serif; line-height:1.5;'>         <h4 style='margin-bottom:4px; color:#3867B4;'>맛있는김밥</h4>         <p>종류: 분식</p>         <p>대표메뉴: 김밥</p>         <p>평점: <span style='color:#FFA000;'>★</span> 4.3</p>         <p>영업시간:<br>08:00~20:00</p>         <p>휴무: 일요일</p>         <p>전화번호: 052-111-1111</p>     </div>     </div>`)[0];
+                popup_7225ea28dfd0f2aa97e683767175884d.setContent(html_fea06c2815c31db677289696826f7d5c);
+            
+        
+
+        circle_marker_976f923f9262771f81dcab7a0c903c38.bindPopup(popup_7225ea28dfd0f2aa97e683767175884d)
+        ;
+
+        
+    
+    
+            circle_marker_976f923f9262771f81dcab7a0c903c38.bindTooltip(
+                `<div>
+                     맛있는김밥
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_d7ceb265d77511430ccedceebeecf113 = L.circleMarker(
+                [35.6345, 129.3555],
+                {"bubblingMouseEvents": true, "className": "marker-\uce74\ud398", "color": "#9b59b6", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#9b59b6", "fillOpacity": 0.85, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 9, "stroke": true, "weight": 3}
+            ).addTo(map_51bec8c9603deebcb8ac8c02cd8efb1a);
+        
+    
+        var popup_5e1bf3f97dbcf9114da96fc4c7303898 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_77a6a8bb0e4144e2cd4e41a4518f02ba = $(`<div id="html_77a6a8bb0e4144e2cd4e41a4518f02ba" style="width: 100.0%; height: 100.0%;">     <div style='width:280px; font-size:14px; font-family:sans-serif; line-height:1.5;'>         <h4 style='margin-bottom:4px; color:#9b59b6;'>카페오늘</h4>         <p>종류: 카페</p>         <p>대표메뉴: 아메리카노</p>         <p>평점: <span style='color:#FFA000;'>★</span> 4.8</p>         <p>영업시간:<br>10:00~22:00</p>         <p>휴무: 없음</p>         <p>전화번호: 052-222-2222</p>     </div>     </div>`)[0];
+                popup_5e1bf3f97dbcf9114da96fc4c7303898.setContent(html_77a6a8bb0e4144e2cd4e41a4518f02ba);
+            
+        
+
+        circle_marker_d7ceb265d77511430ccedceebeecf113.bindPopup(popup_5e1bf3f97dbcf9114da96fc4c7303898)
+        ;
+
+        
+    
+    
+            circle_marker_d7ceb265d77511430ccedceebeecf113.bindTooltip(
+                `<div>
+                     카페오늘
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_faf551e0c2cfb6cb84aac397e3d904eb = L.circleMarker(
+                [35.6322, 129.3533],
+                {"bubblingMouseEvents": true, "className": "marker-\ud55c\uc2dd", "color": "#E94B3C", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#E94B3C", "fillOpacity": 0.85, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 9, "stroke": true, "weight": 3}
+            ).addTo(map_51bec8c9603deebcb8ac8c02cd8efb1a);
+        
+    
+        var popup_6f95cf3611e4d2b59642e7017878231c = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_6ceff6b581fce4bf4a6b9dfa511b1332 = $(`<div id="html_6ceff6b581fce4bf4a6b9dfa511b1332" style="width: 100.0%; height: 100.0%;">     <div style='width:280px; font-size:14px; font-family:sans-serif; line-height:1.5;'>         <h4 style='margin-bottom:4px; color:#E94B3C;'>삼겹살천국</h4>         <p>종류: 한식</p>         <p>대표메뉴: 삼겹살</p>         <p>평점: <span style='color:#FFA000;'>★</span> 4.5</p>         <p>영업시간:<br>17:00~23:00</p>         <p>휴무: 화요일</p>         <p>전화번호: 052-333-3333</p>     </div>     </div>`)[0];
+                popup_6f95cf3611e4d2b59642e7017878231c.setContent(html_6ceff6b581fce4bf4a6b9dfa511b1332);
+            
+        
+
+        circle_marker_faf551e0c2cfb6cb84aac397e3d904eb.bindPopup(popup_6f95cf3611e4d2b59642e7017878231c)
+        ;
+
+        
+    
+    
+            circle_marker_faf551e0c2cfb6cb84aac397e3d904eb.bindTooltip(
+                `<div>
+                     삼겹살천국
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_7ab3e9e2bb848b5305f1b8010d108944 = L.circleMarker(
+                [35.6318, 129.3543],
+                {"bubblingMouseEvents": true, "className": "marker-\uc77c\uc2dd", "color": "#6C5CE7", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#6C5CE7", "fillOpacity": 0.85, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 9, "stroke": true, "weight": 3}
+            ).addTo(map_51bec8c9603deebcb8ac8c02cd8efb1a);
+        
+    
+        var popup_28fbe27652c781e902cf5fc2d9330371 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_226dac9eda503bf8c6aebf6e0d00fbc5 = $(`<div id="html_226dac9eda503bf8c6aebf6e0d00fbc5" style="width: 100.0%; height: 100.0%;">         <div style='width:280px; font-size:14px; font-family:sans-serif; line-height:1.5;'>             <h4 style='margin-bottom:4px; color:#6C5CE7;'>기린식당</h4>             <p>종류: 일식</p>             <p>대표메뉴: 부타카쿠니 덮밥</p>             <p>평점: <span style='color:#FFA000;'>★</span> 4.5</p>             <p>영업시간:<br>11:00 - 20:30 (수요일: 낮 운영)</p>             <p>휴무: 없음</p>             <p>전화번호: 0507-1429-1136</p>         </div>         </div>`)[0];
+                popup_28fbe27652c781e902cf5fc2d9330371.setContent(html_226dac9eda503bf8c6aebf6e0d00fbc5);
+            
+        
+
+        circle_marker_7ab3e9e2bb848b5305f1b8010d108944.bindPopup(popup_28fbe27652c781e902cf5fc2d9330371)
+        ;
+
+        
+    
+    
+            circle_marker_7ab3e9e2bb848b5305f1b8010d108944.bindTooltip(
+                `<div>
+                     기린식당
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_946f989ceb60ec11530f1d2575c36206 = L.circleMarker(
+                [35.633, 129.355],
+                {"bubblingMouseEvents": true, "className": "marker-\uc911\uc2dd", "color": "#F39C12", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#F39C12", "fillOpacity": 0.85, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 9, "stroke": true, "weight": 3}
+            ).addTo(map_51bec8c9603deebcb8ac8c02cd8efb1a);
+        
+    
+        var popup_fdcff50c3f6b64474e5f3b1b3a31bc74 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_74f3a379445851f1a915adc92ccf9b44 = $(`<div id="html_74f3a379445851f1a915adc92ccf9b44" style="width: 100.0%; height: 100.0%;">         <div style='width:280px; font-size:14px; font-family:sans-serif; line-height:1.5;'>             <h4 style='margin-bottom:4px; color:#F39C12;'>황금반점</h4>             <p>종류: 중식</p>             <p>대표메뉴: 짜장면, 탕수육</p>             <p>평점: <span style='color:#FFA000;'>★</span> 4.3</p>             <p>영업시간:<br>11:00 - 21:00</p>             <p>휴무: 없음</p>             <p>전화번호: 052-123-4567</p>         </div>         </div>`)[0];
+                popup_fdcff50c3f6b64474e5f3b1b3a31bc74.setContent(html_74f3a379445851f1a915adc92ccf9b44);
+            
+        
+
+        circle_marker_946f989ceb60ec11530f1d2575c36206.bindPopup(popup_fdcff50c3f6b64474e5f3b1b3a31bc74)
+        ;
+
+        
+    
+    
+            circle_marker_946f989ceb60ec11530f1d2575c36206.bindTooltip(
+                `<div>
+                     황금반점
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_19d355b09b0ede4dc3a0b3b4ae590bea = L.circleMarker(
+                [35.6295, 129.352],
+                {"bubblingMouseEvents": true, "className": "marker-\ud574\uc0b0\ubb3c", "color": "#16a085", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#16a085", "fillOpacity": 0.85, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 9, "stroke": true, "weight": 3}
+            ).addTo(map_51bec8c9603deebcb8ac8c02cd8efb1a);
+        
+    
+        var popup_049d70463b200221a086dd313cdcf6be = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_844bc10ae5ca331945c49427ed0492f6 = $(`<div id="html_844bc10ae5ca331945c49427ed0492f6" style="width: 100.0%; height: 100.0%;">         <div style='width:280px; font-size:14px; font-family:sans-serif; line-height:1.5;'>             <h4 style='margin-bottom:4px; color:#16a085;'>바다향기</h4>             <p>종류: 해산물</p>             <p>대표메뉴: 조개찜</p>             <p>평점: <span style='color:#FFA000;'>★</span> 4.6</p>             <p>영업시간:<br>10:00 - 22:00</p>             <p>휴무: 화요일</p>             <p>전화번호: 052-234-5678</p>         </div>         </div>`)[0];
+                popup_049d70463b200221a086dd313cdcf6be.setContent(html_844bc10ae5ca331945c49427ed0492f6);
+            
+        
+
+        circle_marker_19d355b09b0ede4dc3a0b3b4ae590bea.bindPopup(popup_049d70463b200221a086dd313cdcf6be)
+        ;
+
+        
+    
+    
+            circle_marker_19d355b09b0ede4dc3a0b3b4ae590bea.bindTooltip(
+                `<div>
+                     바다향기
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_54557d29731b9f14175bfcbd2b191298 = L.circleMarker(
+                [35.632, 129.35],
+                {"bubblingMouseEvents": true, "className": "marker-\uce74\ud398", "color": "#9b59b6", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#9b59b6", "fillOpacity": 0.85, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 9, "stroke": true, "weight": 3}
+            ).addTo(map_51bec8c9603deebcb8ac8c02cd8efb1a);
+        
+    
+        var popup_440b23b8a6c77ef97bb72026973b431c = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_241f1ddc9084ca560ae626788f99571e = $(`<div id="html_241f1ddc9084ca560ae626788f99571e" style="width: 100.0%; height: 100.0%;">         <div style='width:280px; font-size:14px; font-family:sans-serif; line-height:1.5;'>             <h4 style='margin-bottom:4px; color:#9b59b6;'>멋진카페</h4>             <p>종류: 카페</p>             <p>대표메뉴: 아메리카노</p>             <p>평점: <span style='color:#FFA000;'>★</span> 4.1</p>             <p>영업시간:<br>08:00 - 20:00</p>             <p>휴무: 없음</p>             <p>전화번호: 052-345-6789</p>         </div>         </div>`)[0];
+                popup_440b23b8a6c77ef97bb72026973b431c.setContent(html_241f1ddc9084ca560ae626788f99571e);
+            
+        
+
+        circle_marker_54557d29731b9f14175bfcbd2b191298.bindPopup(popup_440b23b8a6c77ef97bb72026973b431c)
+        ;
+
+        
+    
+    
+            circle_marker_54557d29731b9f14175bfcbd2b191298.bindTooltip(
+                `<div>
+                     멋진카페
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+</script>
+</html>
